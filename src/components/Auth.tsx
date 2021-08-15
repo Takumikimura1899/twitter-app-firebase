@@ -16,6 +16,7 @@ import {
   Checkbox,
   Button,
   Box,
+  IconButton,
 } from '@material-ui/core';
 
 import {
@@ -93,10 +94,12 @@ const Auth: React.FC = () => {
       await storage.ref(`avatars/${fileName}`).put(avatarImage);
       url = await storage.ref('avatars').child(fileName).getDownloadURL();
     }
+    // firebase側を更新する処理
     await authUser.user?.updateProfile({
       displayName: userName,
       photoURL: url,
     });
+    // reduxのstateを更新する為の処理
     dispatch(
       updateUserProfile({
         displayName: userName,
@@ -122,6 +125,44 @@ const Auth: React.FC = () => {
             {isLogin ? 'Login' : 'Register'}
           </Typography>
           <form className={classes.form} noValidate>
+            {!isLogin && (
+              <>
+                <TextField
+                  variant='outlined'
+                  margin='normal'
+                  required
+                  fullWidth
+                  id='userName'
+                  label='UserName'
+                  name='userName'
+                  autoComplete='userName'
+                  autoFocus
+                  value={userName}
+                  onChange={(e) => {
+                    setUserName(e.target.value);
+                  }}
+                />
+                <Box textAlign='center'>
+                  <IconButton>
+                    <label>
+                      <AccountCircle
+                        fontSize='large'
+                        className={
+                          avatarImage
+                            ? styles.login_addIconLoaded
+                            : styles.login_addIcon
+                        }
+                      />
+                      <input
+                        className={styles.login_hiddenIcon}
+                        type='file'
+                        onChange={onChangeImageHandler}
+                      />
+                    </label>
+                  </IconButton>
+                </Box>
+              </>
+            )}
             <TextField
               variant='outlined'
               margin='normal'
@@ -154,6 +195,11 @@ const Auth: React.FC = () => {
             />
 
             <Button
+              disabled={
+                isLogin
+                  ? !email || password.length < 6
+                  : !userName || !email || password.length < 6 || !avatarImage
+              }
               fullWidth
               variant='contained'
               color='primary'
