@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from './Auth.module.css';
 import { useDispatch } from 'react-redux';
+import { updateUserProfile } from '../features/userSlice';
 import { auth, provider, storage } from '../firebase';
 import {
   Typography,
@@ -24,6 +25,7 @@ import {
   LockOutlined,
   AccountCircle,
 } from '@material-ui/icons';
+import { nanoid } from 'nanoid';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -60,16 +62,47 @@ const useStyles = makeStyles((theme) => ({
 
 const Auth: React.FC = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [userName, setUserName] = useState('');
+  const [avatarImage, setAvatarImage] = useState<File | null>(null);
   const [isLogin, setIsLogin] = useState(true);
+  const onChangeImageHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //   !をつけるとnullではないよって教えてあげられる。
+    // そうしないとアクセス出来ないエラーが出る
+    if (e.target.files![0]) {
+      setAvatarImage(e.target.files![0]);
+      //   初期化してあげないと仕様で同じファイルでのonChangeが発動しないそうな。
+      e.target.value = '';
+    }
+  };
 
   const signInEmail = async () => {
     await auth.signInWithEmailAndPassword(email, password);
   };
 
   const signUpEmail = async () => {
-    await auth.createUserWithEmailAndPassword(email, password);
+    // 返り値として作ったUserのオブジェクトを定数に入れて受け取る
+    const authUser = await auth.createUserWithEmailAndPassword(email, password);
+    let url = '';
+    if (avatarImage) {
+      const randomChar = nanoid();
+      const fileName = randomChar + '_' + avatarImage.name;
+
+      await storage.ref(`avatars/${fileName}`).put(avatarImage);
+      url = await storage.ref('avatars').child(fileName).getDownloadURL();
+    }
+    await authUser.user?.updateProfile({
+      displayName: userName,
+      photoURL: url,
+    });
+    dispatch(
+      updateUserProfile({
+        displayName: userName,
+        photoUrl: url,
+      })
+    );
   };
 
   const signInGoogle = async () => {
@@ -148,10 +181,12 @@ const Auth: React.FC = () => {
             </Button>
 
             <Grid container>
+              {/* xsはデフォルトでtrueなので２こ並べたときに片方trueにしておくと
+                余りの部分を他の要素みたいな感じになるのでもう片方が右端による */}
               <Grid item xs>
                 <span className={styles.login_reset}>Forgot password?</span>
               </Grid>
-              <Grid item xs>
+              <Grid item>
                 <span
                   className={styles.login_toggleMode}
                   onClick={() => setIsLogin(!isLogin)}
