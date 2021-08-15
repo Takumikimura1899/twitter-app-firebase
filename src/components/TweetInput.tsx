@@ -5,7 +5,7 @@ import { selectUser } from '../features/userSlice';
 import { auth, storage, db } from '../firebase';
 import { Avatar, Button, IconButton } from '@material-ui/core';
 // タイムスタンプ用
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import { AddAPhoto } from '@material-ui/icons';
 import { nanoid } from 'nanoid';
 

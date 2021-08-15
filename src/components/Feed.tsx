@@ -23,6 +23,7 @@ const Feed: React.FC = () => {
       .onSnapshot((snapshot) =>
         setPosts(
           snapshot.docs.map((doc) => ({
+            key: doc.id,
             id: doc.id,
             avatar: doc.data().avatar,
             image: doc.data().image,

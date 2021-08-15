@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Post.module.css';
 import { db } from '../firebase';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../features/userSlice';
 import { Avatar, createStyles, Theme, makeStyles } from '@material-ui/core';
-// import { makeStyles } from '@material-ui/styles';
 import { Message, Send } from '@material-ui/icons';
 
 interface PROPS {

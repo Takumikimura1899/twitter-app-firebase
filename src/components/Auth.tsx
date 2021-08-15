@@ -5,15 +5,12 @@ import { updateUserProfile } from '../features/userSlice';
 import { auth, provider, storage } from '../firebase';
 import {
   Typography,
-  Link,
   makeStyles,
   Grid,
   CssBaseline,
   Paper,
   Avatar,
   TextField,
-  FormControlLabel,
-  Checkbox,
   Button,
   Box,
   IconButton,
