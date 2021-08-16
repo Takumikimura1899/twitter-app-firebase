@@ -23,7 +23,6 @@ const Feed: React.FC = () => {
       .onSnapshot((snapshot) =>
         setPosts(
           snapshot.docs.map((doc) => ({
-            key: doc.id,
             id: doc.id,
             avatar: doc.data().avatar,
             image: doc.data().image,
@@ -42,7 +41,7 @@ const Feed: React.FC = () => {
     <div className={styles.feed}>
       Feed
       <TweetInput />
-      {posts[0]?.id && [
+      {posts[0]?.id && (
         <>
           {posts.map((post) => (
             <Post
@@ -55,8 +54,8 @@ const Feed: React.FC = () => {
               userName={post.userName}
             />
           ))}
-        </>,
-      ]}
+        </>
+      )}
     </div>
   );
 };
